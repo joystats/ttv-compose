@@ -1,0 +1,39 @@
+version: '3'
+
+services:
+    parking_api:
+        image: joystats/api
+        container_name: api_container
+        ports:
+            - 80:4000
+        restart: always
+        networks:
+            - parking_site
+    parking_mysql:
+        image: joystats/parking_database
+        container_name: mysql_container
+        volumes:
+            - parking_data:/var/lib/mysql
+        ports:
+            - 3306:3306
+        restart: always
+        environment:
+            MYSQL_ROOT_PASSWORD: 1234
+        networks:
+            - parking_site
+    parking_pma:
+        image: phpmyadmin/phpmyadmin
+        container_name: pma_container
+        ports:
+            - 8088:80
+        restart: always
+        depends_on:
+            - parking_mysql
+        environment:
+            PMA_ARBITRARY: 1
+        networks:
+            - parking_site
+networks:
+    parking_site:
+volumes:
+    parking_data:
